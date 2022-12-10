@@ -5,6 +5,7 @@ type DiffLine = {
 
 export type DiffData = {
   fileName: string;
+  header: string[];
   lines: DiffLine[];
 };
 
@@ -49,9 +50,44 @@ export const splitAtFile = (lines: string[]): string[][][] => {
           ptr++;
         }
       }
-      files.push(parsed)
+      files.push(parsed);
     }
     ptr++;
   }
   return files;
+};
+
+export const parseHunk = (lines: string[]): DiffLine[] => {
+  const parsed: DiffLine[] = [];
+  const m = lines[0].match(/\+(\d+)/);
+  if (m == null) {
+    throw Error("m == null");
+  }
+  let linum = parseInt(m[0]);
+  parsed.push({
+    text: lines[0],
+    linum,
+  });
+  for (let i = 1; i < lines.length; i++) {
+    parsed.push({
+      text: lines[i],
+      linum: lines[i].startsWith("-") ? linum : linum++,
+    });
+  }
+  return parsed;
+};
+
+export const parseDiff = (lines: string[]): DiffData[] => {
+  const split = splitAtFile(lines);
+  const result: DiffData[] = [];
+  for (const chunk of split) {
+    const fileName = chunk[0][1].slice(4).replace(/\t.*$/, "");
+    const lines = chunk.slice(1).flatMap(parseHunk);
+    result.push({
+      fileName,
+      header: chunk[0],
+      lines,
+    })
+  }
+  return result;
 };

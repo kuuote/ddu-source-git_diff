@@ -1,4 +1,4 @@
-import { splitAtFile } from "./diff.ts";
+import { parseDiff, splitAtFile } from "./diff.ts";
 import { assertEquals } from "/data/deno/std/testing/asserts.ts";
 import * as path from "/data/deno/std/path/mod.ts";
 
@@ -66,6 +66,53 @@ Deno.test({
           "+hoge",
         ],
       ],
+    ]);
+  },
+});
+
+Deno.test({
+  name: "parseDiff",
+  fn() {
+    const lines = Deno.readTextFileSync(
+      path.join(dir, "test", "example.diff"),
+    ).split("\n");
+    const diff = parseDiff(lines);
+    assertEquals(diff, [
+      {
+        fileName: "tzu",
+        header: [
+          "--- lao\t2002-02-21 23:30:39.942229878 -0800",
+          "+++ tzu\t2002-02-21 23:30:50.442260588 -0800",
+        ],
+        lines: [
+          { text: "@@ -1,7 +1,6 @@", linum: 1 },
+          {
+            text: "-The Way that can be told of is not the eternal Way;",
+            linum: 1,
+          },
+          {
+            text: "-The name that can be named is not the eternal name.",
+            linum: 1,
+          },
+          {
+            text: " The Nameless is the origin of Heaven and Earth;",
+            linum: 1,
+          },
+          { text: "-The Named is the mother of all things.", linum: 2 },
+          { text: "+The named is the mother of all things.", linum: 2 },
+          { text: "+", linum: 3 },
+          { text: " Therefore let there always be non-being,", linum: 4 },
+          { text: "   so we may see their subtlety,", linum: 5 },
+          { text: " And let there always be being,", linum: 6 },
+          { text: "@@ -9,3 +8,6 @@", linum: 8 },
+          { text: " The two are the same,", linum: 8 },
+          { text: " But after they are produced,", linum: 9 },
+          { text: "   they have different names.", linum: 10 },
+          { text: "+They both may be called deep and profound.", linum: 11 },
+          { text: "+Deeper and more profound,", linum: 12 },
+          { text: "+The door of all subtleties!", linum: 13 },
+        ],
+      },
     ]);
   },
 });
