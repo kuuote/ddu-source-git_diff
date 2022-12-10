@@ -1,0 +1,72 @@
+*ddu-source-git_diff.txt*	Git diff source for ddu.vim
+
+Author: kuuote
+License: zlib license
+
+CONTENTS					*ddu-source-git_diff-contents*
+
+Introduction				|ddu-source-git_diff-introduction|
+Install					|ddu-source-git_diff-install|
+Examples				|ddu-source-git_diff-examples|
+Params					|ddu-source-git_diff-params|
+
+
+==============================================================================
+INTRODUCTION                                *ddu-source-git_diff-introduction*
+
+This source show file differ by `git diff`
+
+
+==============================================================================
+INSTALL                                          *ddu-source-git_diff-install*
+
+Please install under plugins.
+
+https://github.com/vim-denops/denops.vim
+https://github.com/Shougo/ddu.vim
+https://github.com/Shougo/ddu-kind-file
+
+
+==============================================================================
+EXAMPLES                                        *ddu-source-git_diff-examples*
+>
+	call ddu#start(#{ sources: [#{ name: 'git_diff' }] })
+	call ddu#start(#{
+	\   sources: [#{
+	\     name: 'git_diff',
+	\     params: #{
+	\       show: v:true,
+	\     },
+	\   }],
+	\ })
+	
+	" With ddu-commands.vim
+	" https://github.com/Shougo/ddu-commands.vim
+	Ddu git_diff
+	Ddu git_diff -source-param-show=v:true
+<
+
+==============================================================================
+PARAMS                                            *ddu-source-git_diff-params*
+
+                                            *ddu-source-git_diff-param-cached*
+cached		(boolean)
+		Append `--cached` flag to command execution
+
+		Default: v:false
+
+                                       *ddu-source-git_diff-param-currentFile*
+currentFile	(boolean)
+		Show current file only
+
+		Default: v:false
+
+                                              *ddu-source-git_diff-param-show*
+show		(boolean)
+		Use `git show` instead of `git diff`
+
+		Default: v:false
+
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:
