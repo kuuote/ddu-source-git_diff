@@ -9,6 +9,7 @@ Introduction				|ddu-source-git_diff-introduction|
 Install					|ddu-source-git_diff-install|
 Examples				|ddu-source-git_diff-examples|
 Params					|ddu-source-git_diff-params|
+Compatibility				|ddu-source-git_diff-compatibility|
 
 
 ==============================================================================
@@ -30,8 +31,20 @@ https://github.com/Shougo/ddu-kind-file
 
 ==============================================================================
 EXAMPLES                                        *ddu-source-git_diff-examples*
+
+Use |ddu-source-option-path| to specify worktree or target file (for onlyFile)
 >
-	call ddu#start(#{ sources: [#{ name: 'git_diff' }] })
+	call ddu#start(#{
+	\   sources: [#{
+	\     name: 'git_diff',
+	\     options: #{
+	\       path: expand('%:p'),
+	\     },
+	\     params: #{
+	\       onlyFile: v:true,
+	\     },
+	\   }],
+	\ })
 	call ddu#start(#{
 	\   sources: [#{
 	\     name: 'git_diff',
@@ -43,8 +56,8 @@ EXAMPLES                                        *ddu-source-git_diff-examples*
 	
 	" With ddu-commands.vim
 	" https://github.com/Shougo/ddu-commands.vim
-	Ddu git_diff
-	Ddu git_diff -source-param-show=v:true
+	Ddu git_diff -name=git_diff -source-option-path=`expand('%:p')`
+	Ddu git_diff -name=git_diff -source-param-show=v:true
 <
 
 ==============================================================================
@@ -56,9 +69,9 @@ cached		(boolean)
 
 		Default: v:false
 
-                                       *ddu-source-git_diff-param-currentFile*
-currentFile	(boolean)
-		Show current file only
+                                          *ddu-source-git_diff-param-onlyFile*
+onlyFile	(boolean)
+		Shows diff to only specified file
 
 		Default: v:false
 
@@ -68,6 +81,13 @@ show		(boolean)
 
 		Default: v:false
 
+
+==============================================================================
+COMPATIBILITY                              *ddu-source-git_diff-compatibility*
+
+2023-07-09~
+* Use |ddu-source-option-path| instead of current file path.
+  Change to require specify path manually.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:noet:

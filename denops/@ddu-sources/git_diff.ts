@@ -1,8 +1,10 @@
 import { parseDiff } from "./udiff/diff.ts";
-import { dirname } from "https://deno.land/std@0.193.0/path/mod.ts";
-import * as path from "https://deno.land/std@0.193.0/path/mod.ts";
+import * as stdpath from "https://deno.land/std@0.193.0/path/mod.ts";
 import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.5.2/file.ts";
-import { GatherArguments, OnInitArguments } from "https://deno.land/x/ddu_vim@v3.4.1/base/source.ts";
+import {
+  GatherArguments,
+  OnInitArguments,
+} from "https://deno.land/x/ddu_vim@v3.4.1/base/source.ts";
 import {
   BaseSource,
   Item,
@@ -13,11 +15,13 @@ type _ActionData = ActionData & {
   _git_diff: number; // hack: suppress preview window closer
 };
 
-type Params = {
-  cached: boolean;
-  currentFile: boolean;
-  show: boolean;
+const defaultParams = {
+  cached: false,
+  onlyFile: false,
+  show: false,
 };
+
+type Params = typeof defaultParams;
 
 const hls: Record<string, string> = {
   "-": "diffRemoved",
@@ -40,27 +44,42 @@ const run = async (cmd: string[], cwd?: string): Promise<string> => {
 export class Source extends BaseSource<Params> {
   kind = "file";
 
-  gather({
-    context,
+  private worktree = "";
+
+  override async onInit({
     denops,
+    sourceOptions,
+  }: OnInitArguments<Params>): Promise<void> {
+    const worktree = String(sourceOptions.path);
+    const type = await Deno.stat(worktree)
+      .then((info) => info.isFile ? "file" : "dir")
+      .catch(() => "nil");
+    let dir: string;
+    switch (type) {
+      case "file":
+        dir = stdpath.dirname(worktree);
+        break;
+      case "dir":
+        dir = worktree;
+        break;
+      default:
+        dir = String(await denops.call("getcwd"));
+    }
+    this.worktree = (await run([
+      "git",
+      "rev-parse",
+      "--show-toplevel",
+    ], dir)).trim();
+  }
+
+  gather({
     sourceParams,
+    sourceOptions,
   }: GatherArguments<Params>): ReadableStream<Item<_ActionData>[]> {
     return new ReadableStream({
-      async start(controller) {
+      start: async (controller) => {
         try {
-          const currentFile = String(
-            await denops.eval(
-              `resolve(fnamemodify(bufname(${context.bufNr}), ':p'))`,
-            ),
-          );
-          const currentDir = Deno.statSync(currentFile).isDirectory
-            ? currentFile
-            : dirname(currentFile);
-          const worktree = (await run([
-            "git",
-            "rev-parse",
-            "--show-toplevel",
-          ], currentDir)).trim();
+          const path = String(sourceOptions.path);
           const diff = (await run(
             [
               "git",
@@ -72,14 +91,14 @@ export class Source extends BaseSource<Params> {
               ...((!sourceParams.show && sourceParams.cached)
                 ? ["--cached"]
                 : []),
-              ...(sourceParams.currentFile ? [currentFile] : []),
+              ...(sourceParams.onlyFile ? [path] : []),
             ],
-            worktree,
+            this.worktree,
           )).split("\n");
           const chunks = parseDiff(diff);
           const items: Item<_ActionData>[][] = [];
           for (const chunk of chunks) {
-            const fileName = path.join(worktree, chunk.fileName);
+            const fileName = stdpath.join(this.worktree, chunk.fileName);
             items.push(chunk.header.map((line, idx) => {
               const hl = line.startsWith("---")
                 ? "diffOldFile"
@@ -134,10 +153,6 @@ export class Source extends BaseSource<Params> {
   }
 
   params(): Params {
-    return {
-      cached: false,
-      currentFile: false,
-      show: false,
-    };
+    return defaultParams;
   }
 }

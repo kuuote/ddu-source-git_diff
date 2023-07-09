@@ -87,7 +87,7 @@ export const parseDiff = (lines: string[]): DiffData[] => {
       fileName,
       header: chunk[0],
       lines,
-    })
+    });
   }
   return result;
 };
