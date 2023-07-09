@@ -1,13 +1,13 @@
 import { parseDiff } from "./udiff/diff.ts";
-import { dirname } from "https://deno.land/std@0.167.0/path/mod.ts";
-import * as path from "https://deno.land/std@0.167.0/path/mod.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.3.2/file.ts";
-import { GatherArguments } from "https://deno.land/x/ddu_vim@v2.0.0/base/source.ts";
+import { dirname } from "https://deno.land/std@0.193.0/path/mod.ts";
+import * as path from "https://deno.land/std@0.193.0/path/mod.ts";
+import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.5.2/file.ts";
+import { GatherArguments, OnInitArguments } from "https://deno.land/x/ddu_vim@v3.4.1/base/source.ts";
 import {
   BaseSource,
   Item,
   ItemHighlight,
-} from "https://deno.land/x/ddu_vim@v2.0.0/types.ts";
+} from "https://deno.land/x/ddu_vim@v3.4.1/types.ts";
 
 type _ActionData = ActionData & {
   _git_diff: number; // hack: suppress preview window closer
