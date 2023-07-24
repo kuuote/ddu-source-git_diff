@@ -1,4 +1,4 @@
-type DiffLine = {
+export type DiffLine = {
   text: string; // text of line
   linum: number; // line number of patch target file
   olinum: number; // line number of origin file
@@ -92,6 +92,24 @@ export const parseHunk = (lines: string[]): DiffLine[] => {
   }
   return parsed;
 };
+
+export function applyPatch(origin: string[], patch: DiffLine[]): string[] {
+  const patched = origin.slice();
+  // 簡素化のため、後ろからパッチを打つ
+  // 順番狂うので+(linum)を先に処理する
+  const realPatch = patch.toSorted((a, b) =>
+    b.linum - a.linum || b.olinum - a.olinum
+  );
+  for (const p of realPatch) {
+    const point = p.olinum - 1;
+    if (p.text[0] === "-") {
+      patched.splice(point, 1);
+    } else if (p.text[0] === "+") {
+      patched.splice(point, 0, p.text.slice(1));
+    }
+  }
+  return patched;
+}
 
 export const parseDiff = (lines: string[]): DiffData[] => {
   const split = splitAtFile(lines);
