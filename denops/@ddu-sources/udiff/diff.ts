@@ -1,6 +1,7 @@
 type DiffLine = {
-  text: string;
-  linum: number;
+  text: string; // text of line
+  linum: number; // line number of patch target file
+  olinum: number; // line number of origin file
 };
 
 export type DiffData = {
@@ -8,6 +9,8 @@ export type DiffData = {
   header: string[];
   lines: DiffLine[];
 };
+
+const hunkAddressExpr = /-(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))?/;
 
 export const splitAtFile = (lines: string[]): string[][][] => {
   let ptr = 0;
@@ -19,7 +22,8 @@ export const splitAtFile = (lines: string[]): string[][][] => {
       while (lines[ptr][0] === "@") {
         const hunkStart = ptr;
         // Note: hunk size omitted if 1
-        const m = lines[ptr].match(/-(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))?/);
+        //
+        const m = lines[ptr].match(hunkAddressExpr);
         if (m == null) {
           throw "invalid hunk at " + ptr;
         }
@@ -59,20 +63,32 @@ export const splitAtFile = (lines: string[]): string[][][] => {
 
 export const parseHunk = (lines: string[]): DiffLine[] => {
   const parsed: DiffLine[] = [];
-  const m = lines[0].match(/\+(\d+)/);
+  const m = lines[0].match(hunkAddressExpr);
   if (m == null) {
     throw Error("m == null");
   }
-  let linum = parseInt(m[0]);
+  let olinum = parseInt(m[1] ?? 1);
+  let linum = parseInt(m[3] ?? 1);
   parsed.push({
     text: lines[0],
     linum,
+    olinum,
   });
   for (let i = 1; i < lines.length; i++) {
     parsed.push({
       text: lines[i],
-      linum: lines[i].startsWith("-") ? linum : linum++,
+      linum,
+      olinum,
     });
+    const head = lines[i][0];
+    if (head === "+") {
+      linum++;
+    } else if (head === "-") {
+      olinum++;
+    } else {
+      linum++;
+      olinum++;
+    }
   }
   return parsed;
 };
