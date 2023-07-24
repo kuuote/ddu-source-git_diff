@@ -8,6 +8,7 @@ CONTENTS					*ddu-source-git_diff-contents*
 Introduction				|ddu-source-git_diff-introduction|
 Install					|ddu-source-git_diff-install|
 Examples				|ddu-source-git_diff-examples|
+Actions					|ddu-source-git_diff-actions|
 Params					|ddu-source-git_diff-params|
 Compatibility				|ddu-source-git_diff-compatibility|
 
@@ -59,6 +60,17 @@ Use |ddu-source-option-path| to specify worktree or target file (for onlyFile)
 	Ddu git_diff -name=git_diff -source-option-path=`expand('%:p')`
 	Ddu git_diff -name=git_diff -source-param-show=v:true
 <
+
+==============================================================================
+ACTIONS                                          *ddu-source-git_diff-actions*
+
+Almost actions are from |ddu-kind-file|. Please see it.
+
+                                       *ddu-source-git_diff-action-applyPatch*
+applyPatch
+		Apply patch of selected lines to staging area
+		It can be partial add like lazygit
+		(This is experimental feature. it works only normal diff now)
 
 ==============================================================================
 PARAMS                                            *ddu-source-git_diff-params*
