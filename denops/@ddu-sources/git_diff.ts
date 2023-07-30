@@ -22,6 +22,7 @@ type _ActionData = ActionData & {
 const defaultParams = {
   cached: false,
   onlyFile: false,
+  reverse: false,
   show: false,
 };
 
@@ -153,6 +154,7 @@ export class Source extends BaseSource<Params> {
               "--no-prefix",
               "--no-relative",
               "--no-renames",
+              ...(sourceParams.reverse ? ["-R"] : []),
               ...((!sourceParams.show && sourceParams.cached)
                 ? ["--cached"]
                 : []),
