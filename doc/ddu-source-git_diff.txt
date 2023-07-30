@@ -33,7 +33,7 @@ https://github.com/Shougo/ddu-kind-file
 ==============================================================================
 EXAMPLES                                        *ddu-source-git_diff-examples*
 
-Use |ddu-source-option-path| to specify worktree or target file (for onlyFile)
+Use |ddu-source-option-path| to specify worktree or target file. (for onlyFile)
 >
 	call ddu#start(#{
 	\   sources: [#{
@@ -68,28 +68,38 @@ Almost actions are from |ddu-kind-file|. Please see it.
 
                                        *ddu-source-git_diff-action-applyPatch*
 applyPatch
-		Apply patch of selected lines to staging area
-		It can be partial add like lazygit
-		(This is experimental feature. it works only normal diff now)
+		Apply patch of selected lines to staging area.
+		It can be partial add like lazygit.
+		Note: It's only normal diff or reverse and cached flags are
+		true to works properly.
 
 ==============================================================================
 PARAMS                                            *ddu-source-git_diff-params*
 
                                             *ddu-source-git_diff-param-cached*
 cached		(boolean)
-		Append `--cached` flag to command execution
+		Append `--cached` flag to command execution.
+		For display staging area.
 
 		Default: v:false
 
                                           *ddu-source-git_diff-param-onlyFile*
 onlyFile	(boolean)
-		Shows diff to only specified file
+		Shows diff to only specified file.
+
+		Default: v:false
+
+                                           *ddu-source-git_diff-param-reverse*
+reverse		(boolean)
+		Swap diff target by `git diff -R`
+		It is useful for applyPatch action with cached param
+		for discard cached lines.
 
 		Default: v:false
 
                                               *ddu-source-git_diff-param-show*
 show		(boolean)
-		Use `git show` instead of `git diff`
+		Use `git show` instead of `git diff` 
 
 		Default: v:false
 
