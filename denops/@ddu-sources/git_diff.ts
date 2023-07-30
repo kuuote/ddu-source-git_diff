@@ -15,10 +15,6 @@ import {
 import { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
 import * as u from "https://deno.land/x/unknownutil@v3.2.0/mod.ts";
 
-type _ActionData = ActionData & {
-  _git_diff: number; // hack: suppress preview window closer
-};
-
 const defaultParams = {
   cached: false,
   onlyFile: false,
@@ -140,7 +136,7 @@ export class Source extends BaseSource<Params> {
     denops,
     sourceParams,
     sourceOptions,
-  }: GatherArguments<Params>): ReadableStream<Item<_ActionData>[]> {
+  }: GatherArguments<Params>): ReadableStream<Item<ActionData>[]> {
     return new ReadableStream({
       start: async (controller) => {
         try {
@@ -163,10 +159,10 @@ export class Source extends BaseSource<Params> {
             worktree,
           )).split("\n");
           const chunks = parseDiff(diff);
-          const items: Item<_ActionData>[][] = [];
+          const items: Item<ActionData>[][] = [];
           for (const chunk of chunks) {
             const fileName = stdpath.join(worktree, chunk.fileName);
-            items.push(chunk.header.map((line, idx) => {
+            items.push(chunk.header.map((line) => {
               const hl = line.startsWith("---")
                 ? "diffOldFile"
                 : line.startsWith("+++")
@@ -178,7 +174,6 @@ export class Source extends BaseSource<Params> {
                 action: {
                   lineNr: 1,
                   path: fileName,
-                  _git_diff: -idx,
                 },
                 highlights: [{
                   name: hlID,
@@ -188,7 +183,7 @@ export class Source extends BaseSource<Params> {
                 }],
               };
             }));
-            items.push(chunk.lines.map((line, idx) => {
+            items.push(chunk.lines.map((line) => {
               const highlights: ItemHighlight[] = [];
               const hl = hls[line.text[0]];
               if (hl != null) {
@@ -211,7 +206,6 @@ export class Source extends BaseSource<Params> {
                 action: {
                   lineNr: line.linum,
                   path: fileName,
-                  _git_diff: idx,
                 },
                 highlights,
               };
