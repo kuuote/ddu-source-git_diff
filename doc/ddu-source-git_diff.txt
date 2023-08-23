@@ -16,9 +16,10 @@ Compatibility				|ddu-source-git_diff-compatibility|
 ==============================================================================
 INTRODUCTION                                *ddu-source-git_diff-introduction*
 
-This source show file differ by `git diff`
+This is |ddu-sources| show file differ by `git diff`
 
-It is a file source like ddu-source-line. useful for jump to modified position
+It is a |ddu-kind-file| source like |ddu-source-line|.
+It useful for jump to modified position
 
 ==============================================================================
 INSTALL                                          *ddu-source-git_diff-install*
