@@ -162,7 +162,7 @@ export class Source extends BaseSource<Params> {
           const chunks = parseDiff(diff);
           const items: Item<ActionData>[][] = [];
           for (const chunk of chunks) {
-            const fileName = stdpath.join(worktree, chunk.fileName);
+            const fileName = stdpath.join(worktree, chunk.newFileName);
             items.push(chunk.header.map((line) => {
               const hl = line.startsWith("---")
                 ? "diffOldFile"

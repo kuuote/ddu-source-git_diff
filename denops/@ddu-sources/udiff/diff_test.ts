@@ -79,7 +79,8 @@ Deno.test({
     const diff = parseDiff(lines);
     assertEquals(diff, [
       {
-        fileName: "tzu",
+        oldFileName: "lao",
+        newFileName: "tzu",
         header: [
           "--- lao\t2002-02-21 23:30:39.942229878 -0800",
           "+++ tzu\t2002-02-21 23:30:50.442260588 -0800",

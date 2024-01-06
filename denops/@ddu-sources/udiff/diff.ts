@@ -5,7 +5,8 @@ export type DiffLine = {
 };
 
 export type DiffData = {
-  fileName: string;
+  oldFileName: string;
+  newFileName: string;
   header: string[];
   lines: DiffLine[];
 };
@@ -115,10 +116,12 @@ export const parseDiff = (lines: string[]): DiffData[] => {
   const split = splitAtFile(lines);
   const result: DiffData[] = [];
   for (const chunk of split) {
-    const fileName = chunk[0][1].slice(4).replace(/\t.*$/, "");
+    const oldFileName = chunk[0][0].slice(4).replace(/\t.*$/, "");
+    const newFileName = chunk[0][1].slice(4).replace(/\t.*$/, "");
     const lines = chunk.slice(1).flatMap(parseHunk);
     result.push({
-      fileName,
+      oldFileName,
+      newFileName,
       header: chunk[0],
       lines,
     });
