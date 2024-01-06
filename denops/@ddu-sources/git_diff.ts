@@ -23,9 +23,15 @@ const defaultParams = {
   show: false,
 };
 
+const isDiffLine = u.isObjectOf({
+  text: u.isString,
+  linum: u.isNumber,
+  olinum: u.isNumber,
+});
+
 type Data = {
   git_diff: {
-    line: DiffLine;
+    lines: DiffLine[];
     worktree: string;
     path: string;
   };
@@ -33,11 +39,7 @@ type Data = {
 
 const isData: u.Predicate<Data> = u.isObjectOf({
   git_diff: u.isObjectOf({
-    line: u.isObjectOf({
-      text: u.isString,
-      linum: u.isNumber,
-      olinum: u.isNumber,
-    }),
+    lines: u.isArrayOf(isDiffLine),
     worktree: u.isString,
     path: u.isString,
   }),
@@ -105,7 +107,7 @@ export class Source extends BaseSource<Params> {
           continue;
         }
         const worktree = items[0].data.git_diff.worktree;
-        const patches = items.map((item) => item.data.git_diff.line);
+        const patches = items.map((item) => item.data.git_diff.lines).flat();
         // git showにtreeishを与えるとindexのデータを取れる
         // treeishはworktree相対で与える必要がある
         const path = stdpath.relative(worktree, abspath);
@@ -198,7 +200,7 @@ export class Source extends BaseSource<Params> {
               return {
                 data: {
                   git_diff: {
-                    line,
+                    lines: [line],
                     worktree: worktree,
                     path: fileName,
                   },
