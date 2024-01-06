@@ -1,0 +1,9 @@
+{
+  "lock": false,
+  "tasks": {
+    "fmt-check": "deno fmt --check denops",
+    "lint": "deno lint",
+    "test": "deno test -A",
+    "check": "deno task fmt-check && deno task lint && deno task test"
+  }
+}
