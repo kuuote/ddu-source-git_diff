@@ -1,20 +1,19 @@
 import { applyPatch, DiffLine, parseDiff } from "./udiff/diff.ts";
-import { groupBy } from "https://deno.land/std@0.203.0/collections/group_by.ts";
-import * as stdpath from "https://deno.land/std@0.203.0/path/mod.ts";
+import * as stdpath from "https://deno.land/std@0.211.0/path/mod.ts";
 import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.7.1/file.ts";
 import {
   GatherArguments,
-} from "https://deno.land/x/ddu_vim@v3.6.0/base/source.ts";
+} from "https://deno.land/x/ddu_vim@v3.9.0/base/source.ts";
 import {
   ActionArguments,
   ActionFlags,
   BaseSource,
   Item,
   ItemHighlight,
-} from "https://deno.land/x/ddu_vim@v3.6.0/types.ts";
-import { errorException } from "https://deno.land/x/ddu_vim@v3.6.0/utils.ts";
-import { Denops } from "https://deno.land/x/denops_std@v5.0.1/mod.ts";
-import * as u from "https://deno.land/x/unknownutil@v3.9.0/mod.ts";
+} from "https://deno.land/x/ddu_vim@v3.9.0/types.ts";
+import { errorException } from "https://deno.land/x/ddu_vim@v3.9.0/utils.ts";
+import { Denops } from "https://deno.land/x/denops_std@v5.2.0/mod.ts";
+import * as u from "https://deno.land/x/unknownutil@v3.13.0/mod.ts";
 
 const defaultParams = {
   cached: false,
@@ -95,17 +94,13 @@ export class Source extends BaseSource<Params> {
     applyPatch: async (args: ActionArguments<Params>) => {
       const isNonNull = <T>(x: T): x is NonNullable<T> => x != null;
       // ファイル単位で処理
-      const itemsByFiles = groupBy(
+      const itemsByFiles = Object.groupBy(
         args.items
           .map((item) => u.maybe(item, isItemWithData))
           .filter(isNonNull), // 型ァ！(filter直だと上手く行かん)
         (item) => item.data.git_diff.path,
       );
       for (const [abspath, items] of Object.entries(itemsByFiles)) {
-        // 型ァ！
-        if (items == null) {
-          continue;
-        }
         const worktree = items[0].data.git_diff.worktree;
         const patches = items.map((item) => item.data.git_diff.lines).flat();
         // git showにtreeishを与えるとindexのデータを取れる
