@@ -22,8 +22,7 @@ export const splitAtFile = (lines: string[]): string[][][] => {
       ptr += 2;
       while (lines[ptr][0] === "@") {
         const hunkStart = ptr;
-        // Note: hunk size omitted if 1
-        //
+        // Note: hunk size is 1 if omitted
         const m = lines[ptr].match(hunkAddressExpr);
         if (m == null) {
           throw "invalid hunk at " + ptr;
