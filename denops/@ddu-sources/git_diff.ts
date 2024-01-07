@@ -24,11 +24,11 @@ const defaultParams = {
 
 const isDiffLine = u.isObjectOf({
   text: u.isString,
-  linum: u.isNumber,
+  nlinum: u.isNumber,
   olinum: u.isNumber,
 });
 
-type Data = {
+export type Data = {
   git_diff: {
     lines: DiffLine[];
     worktree: string;
@@ -53,7 +53,6 @@ type Params = typeof defaultParams;
 const hls: Record<string, string> = {
   "-": "diffRemoved",
   "+": "diffAdded",
-  "@": "diffLine",
 };
 
 const run = async (cmd: string[], cwd = Deno.cwd()): Promise<string> => {
@@ -85,6 +84,24 @@ async function getWorktreeFromPath(denops: Denops, worktree: string) {
     "rev-parse",
     "--show-toplevel",
   ], dir)).trim();
+}
+
+function makeHighlight(text: string, highlightGroup?: string): {
+  highlights?: ItemHighlight[];
+} {
+  if (highlightGroup == null) {
+    return {};
+  }
+  return {
+    highlights: [
+      {
+        name: "git_diff_hl_" + highlightGroup,
+        "hl_group": highlightGroup,
+        col: 1,
+        width: new TextEncoder().encode(text).length,
+      },
+    ],
+  };
 }
 
 export class Source extends BaseSource<Params> {
@@ -165,49 +182,52 @@ export class Source extends BaseSource<Params> {
                 ? "diffOldFile"
                 : line.startsWith("+++")
                 ? "diffNewFile"
-                : "";
-              const hlID = "git_diff_hl_" + hl;
+                : undefined;
+              const highlight = makeHighlight(line, hl);
               return {
                 word: line,
                 action: {
                   lineNr: 1,
                   path: fileName,
                 },
-                highlights: [{
-                  name: hlID,
-                  "hl_group": hl,
-                  col: 1,
-                  width: new TextEncoder().encode(line).length,
-                }],
+                ...highlight,
               };
             }));
-            items.push(chunk.lines.map((line) => {
-              const highlights: ItemHighlight[] = [];
-              const hl = hls[line.text[0]];
-              if (hl != null) {
-                highlights.push({
-                  name: "git_diff_hl_" + hl,
-                  "hl_group": hl,
-                  col: 1,
-                  width: new TextEncoder().encode(line.text).length,
-                });
-              }
-              return {
+            for (const hunk of chunk.hunks) {
+              items.push([{
                 data: {
                   git_diff: {
-                    lines: [line],
+                    lines: hunk.lines,
                     worktree: worktree,
                     path: fileName,
                   },
                 } satisfies Data,
-                word: line.text,
+                word: hunk.header,
                 action: {
-                  lineNr: line.linum,
+                  lineNr: hunk.nstart,
                   path: fileName,
                 },
-                highlights,
-              };
-            }));
+                ...makeHighlight(hunk.header, "diffLine"),
+              }]);
+              items.push(hunk.lines.map((line) => {
+                const highlight = makeHighlight(line.text, hls[line.text[0]]);
+                return {
+                  data: {
+                    git_diff: {
+                      lines: [line],
+                      worktree: worktree,
+                      path: fileName,
+                    },
+                  } satisfies Data,
+                  word: line.text,
+                  action: {
+                    lineNr: line.nlinum,
+                    path: fileName,
+                  },
+                  ...highlight,
+                };
+              }));
+            }
           }
           controller.enqueue(items.flat());
           controller.close();

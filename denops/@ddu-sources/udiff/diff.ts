@@ -1,14 +1,21 @@
 export type DiffLine = {
   text: string; // text of line
-  linum: number; // line number of patch target file
   olinum: number; // line number of origin file
+  nlinum: number; // line number of patch target file
+};
+
+export type Hunk = {
+  header: string;
+  ostart: number;
+  nstart: number;
+  lines: DiffLine[];
 };
 
 export type DiffData = {
   oldFileName: string;
   newFileName: string;
   header: string[];
-  lines: DiffLine[];
+  hunks: Hunk[];
 };
 
 const hunkAddressExpr = /-(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))?/;
@@ -61,36 +68,38 @@ export const splitAtFile = (lines: string[]): string[][][] => {
   return files;
 };
 
-export const parseHunk = (lines: string[]): DiffLine[] => {
+export const parseHunk = (lines: string[]): Hunk => {
   const parsed: DiffLine[] = [];
   const m = lines[0].match(hunkAddressExpr);
   if (m == null) {
     throw Error("m == null");
   }
-  let olinum = parseInt(m[1] ?? 1);
-  let linum = parseInt(m[3] ?? 1);
-  parsed.push({
-    text: lines[0],
-    linum,
-    olinum,
-  });
+  const ostart = parseInt(m[1] ?? 1);
+  const nstart = parseInt(m[3] ?? 1);
+  let olinum = ostart;
+  let nlinum = nstart;
   for (let i = 1; i < lines.length; i++) {
     parsed.push({
       text: lines[i],
-      linum,
       olinum,
+      nlinum,
     });
     const head = lines[i][0];
     if (head === "+") {
-      linum++;
+      nlinum++;
     } else if (head === "-") {
       olinum++;
     } else {
-      linum++;
+      nlinum++;
       olinum++;
     }
   }
-  return parsed;
+  return {
+    header: lines[0],
+    ostart,
+    nstart,
+    lines: parsed,
+  };
 };
 
 export function applyPatch(origin: string[], patch: DiffLine[]): string[] {
@@ -98,7 +107,7 @@ export function applyPatch(origin: string[], patch: DiffLine[]): string[] {
   // 簡素化のため、後ろからパッチを打つ
   // 順番狂うので+(linum)を先に処理する
   const realPatch = patch.toSorted((a, b) =>
-    b.linum - a.linum || b.olinum - a.olinum
+    b.nlinum - a.nlinum || b.olinum - a.olinum
   );
   for (const p of realPatch) {
     const point = p.olinum - 1;
@@ -117,12 +126,12 @@ export const parseDiff = (lines: string[]): DiffData[] => {
   for (const chunk of split) {
     const oldFileName = chunk[0][0].slice(4).replace(/\t.*$/, "");
     const newFileName = chunk[0][1].slice(4).replace(/\t.*$/, "");
-    const lines = chunk.slice(1).flatMap(parseHunk);
+    const hunks = chunk.slice(1).map(parseHunk);
     result.push({
       oldFileName,
       newFileName,
       header: chunk[0],
-      lines,
+      hunks,
     });
   }
   return result;

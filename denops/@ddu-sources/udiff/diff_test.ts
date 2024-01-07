@@ -79,99 +79,103 @@ Deno.test({
     const diff = parseDiff(lines);
     assertEquals(diff, [
       {
-        oldFileName: "lao",
-        newFileName: "tzu",
         header: [
           "--- lao\t2002-02-21 23:30:39.942229878 -0800",
           "+++ tzu\t2002-02-21 23:30:50.442260588 -0800",
         ],
-        lines: [
+        hunks: [
           {
-            linum: 1,
-            olinum: 1,
-            text: "@@ -1,7 +1,6 @@",
+            header: "@@ -1,7 +1,6 @@",
+            lines: [
+              {
+                nlinum: 1,
+                olinum: 1,
+                text: "-The Way that can be told of is not the eternal Way;",
+              },
+              {
+                nlinum: 1,
+                olinum: 2,
+                text: "-The name that can be named is not the eternal name.",
+              },
+              {
+                nlinum: 1,
+                olinum: 3,
+                text: " The Nameless is the origin of Heaven and Earth;",
+              },
+              {
+                nlinum: 2,
+                olinum: 4,
+                text: "-The Named is the mother of all things.",
+              },
+              {
+                nlinum: 2,
+                olinum: 5,
+                text: "+The named is the mother of all things.",
+              },
+              {
+                nlinum: 3,
+                olinum: 5,
+                text: "+",
+              },
+              {
+                nlinum: 4,
+                olinum: 5,
+                text: " Therefore let there always be non-being,",
+              },
+              {
+                nlinum: 5,
+                olinum: 6,
+                text: "   so we may see their subtlety,",
+              },
+              {
+                nlinum: 6,
+                olinum: 7,
+                text: " And let there always be being,",
+              },
+            ],
+            nstart: 1,
+            ostart: 1,
           },
           {
-            linum: 1,
-            olinum: 1,
-            text: "-The Way that can be told of is not the eternal Way;",
-          },
-          {
-            linum: 1,
-            olinum: 2,
-            text: "-The name that can be named is not the eternal name.",
-          },
-          {
-            linum: 1,
-            olinum: 3,
-            text: " The Nameless is the origin of Heaven and Earth;",
-          },
-          {
-            linum: 2,
-            olinum: 4,
-            text: "-The Named is the mother of all things.",
-          },
-          {
-            linum: 2,
-            olinum: 5,
-            text: "+The named is the mother of all things.",
-          },
-          {
-            linum: 3,
-            olinum: 5,
-            text: "+",
-          },
-          {
-            linum: 4,
-            olinum: 5,
-            text: " Therefore let there always be non-being,",
-          },
-          {
-            linum: 5,
-            olinum: 6,
-            text: "   so we may see their subtlety,",
-          },
-          {
-            linum: 6,
-            olinum: 7,
-            text: " And let there always be being,",
-          },
-          {
-            linum: 8,
-            olinum: 9,
-            text: "@@ -9,3 +8,6 @@",
-          },
-          {
-            linum: 8,
-            olinum: 9,
-            text: " The two are the same,",
-          },
-          {
-            linum: 9,
-            olinum: 10,
-            text: " But after they are produced,",
-          },
-          {
-            linum: 10,
-            olinum: 11,
-            text: "   they have different names.",
-          },
-          {
-            linum: 11,
-            olinum: 12,
-            text: "+They both may be called deep and profound.",
-          },
-          {
-            linum: 12,
-            olinum: 12,
-            text: "+Deeper and more profound,",
-          },
-          {
-            linum: 13,
-            olinum: 12,
-            text: "+The door of all subtleties!",
+            header: "@@ -9,3 +8,6 @@",
+            lines: [
+              {
+                nlinum: 8,
+                olinum: 9,
+                text: " The two are the same,",
+              },
+              {
+                nlinum: 9,
+                olinum: 10,
+                text: " But after they are produced,",
+              },
+              {
+                nlinum: 10,
+                olinum: 11,
+                text: "   they have different names.",
+              },
+              {
+                nlinum: 11,
+                olinum: 12,
+                text: "+They both may be called deep and profound.",
+              },
+              {
+                nlinum: 12,
+                olinum: 12,
+                text: "+Deeper and more profound,",
+              },
+              {
+                nlinum: 13,
+                olinum: 12,
+                text: "+The door of all subtleties!",
+              },
+            ],
+            nstart: 8,
+            ostart: 9,
           },
         ],
+        newFileName: "tzu",
+        oldFileName: "lao",
       },
     ]);
   },
