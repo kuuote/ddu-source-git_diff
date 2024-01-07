@@ -192,6 +192,13 @@ export class Source extends BaseSource<Params> {
                 : undefined;
               const highlight = makeHighlight(line, hl);
               return {
+                data: {
+                  git_diff: {
+                    lines: chunk.hunks.map((h) => h.lines).flat(),
+                    worktree: worktree,
+                    path: fileName,
+                  },
+                } satisfies Data,
                 word: line,
                 action: {
                   lineNr: 1,

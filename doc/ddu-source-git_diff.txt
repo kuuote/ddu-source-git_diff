@@ -69,7 +69,7 @@ Almost actions are from |ddu-kind-file|. Please see it.
 
                                        *ddu-source-git_diff-action-applyPatch*
 applyPatch
-		Apply patch of selected lines to staging area.
+		Apply patch of selects files, hunks, or lines to staging area.
 		It can be partial add like lazygit.
 		Note: It's only normal diff or reverse and cached flags are
 		true to works properly.
