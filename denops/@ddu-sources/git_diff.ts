@@ -104,6 +104,13 @@ function makeHighlight(text: string, highlightGroup?: string): {
   };
 }
 
+function requiredEntries<V>(
+  obj: Record<string, V>,
+): [string, NonNullable<V>][] {
+  return Object.entries(obj)
+    .filter((e: [string, V]): e is [string, NonNullable<V>] => e[1] != null);
+}
+
 export class Source extends BaseSource<Params> {
   override kind = "file";
 
@@ -117,7 +124,7 @@ export class Source extends BaseSource<Params> {
           .filter(isNonNull), // 型ァ！(filter直だと上手く行かん)
         (item) => item.data.git_diff.path,
       );
-      for (const [abspath, items] of Object.entries(itemsByFiles)) {
+      for (const [abspath, items] of requiredEntries(itemsByFiles)) {
         const worktree = items[0].data.git_diff.worktree;
         const patches = items.map((item) => item.data.git_diff.lines).flat();
         // git showにtreeishを与えるとindexのデータを取れる
