@@ -104,6 +104,12 @@ show		(boolean)
 
 		Default: v:false
 
+                                    *ddu-source-git_diff-param-unifiedContext*
+unifiedContext	(number)
+		Generate diffs with specified lines of unified context.
+		It pass to `-U<n>`
+
+		Default: 3
 
 ==============================================================================
 COMPATIBILITY                              *ddu-source-git_diff-compatibility*

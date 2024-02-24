@@ -20,6 +20,7 @@ const defaultParams = {
   onlyFile: false,
   reverse: false,
   show: false,
+  unifiedContext: 3,
 };
 
 const isDiffLine = u.isObjectOf({
@@ -172,6 +173,7 @@ export class Source extends BaseSource<Params> {
               "--no-prefix",
               "--no-relative",
               "--no-renames",
+              "-U" + sourceParams.unifiedContext,
               ...(sourceParams.reverse ? ["-R"] : []),
               ...((!sourceParams.show && sourceParams.cached)
                 ? ["--cached"]
