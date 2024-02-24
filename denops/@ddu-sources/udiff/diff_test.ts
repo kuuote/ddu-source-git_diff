@@ -180,3 +180,139 @@ Deno.test({
     ]);
   },
 });
+
+Deno.test({
+  name: "parseDiff:U0",
+  fn() {
+    const lines = Deno.readTextFileSync(
+      path.join(dir, "test", "u0.diff"),
+    ).split("\n");
+    const diff = parseDiff(lines);
+    assertEquals(diff, [
+      {
+        header: [
+          "--- a/denops/@ddu-sources/git_diff.ts",
+          "+++ b/denops/@ddu-sources/git_diff.ts",
+        ],
+        hunks: [
+          {
+            header: "@@ -22,0 +23 @@ const defaultParams = {",
+            lines: [
+              {
+                nlinum: 23,
+                olinum: 23,
+                text: "+  unifiedContext: 3,",
+              },
+            ],
+            nstart: 23,
+            ostart: 22,
+          },
+          {
+            header:
+              "@@ -174,0 +176 @@ export class Source extends BaseSource<Params> {",
+            lines: [
+              {
+                nlinum: 176,
+                olinum: 175,
+                text: '+              "-U" + sourceParams.unifiedContext,',
+              },
+            ],
+            nstart: 176,
+            ostart: 174,
+          },
+        ],
+        newFileName: "b/denops/@ddu-sources/git_diff.ts",
+        oldFileName: "a/denops/@ddu-sources/git_diff.ts",
+      },
+      {
+        header: [
+          "--- a/denops/@ddu-sources/udiff/diff.ts",
+          "+++ b/denops/@ddu-sources/udiff/diff.ts",
+        ],
+        hunks: [
+          {
+            header:
+              "@@ -79 +79,3 @@ export const parseHunk = (lines: string[]): Hunk => {",
+            lines: [
+              {
+                nlinum: 79,
+                olinum: 79,
+                text: "-  let olinum = ostart;",
+              },
+              {
+                nlinum: 79,
+                olinum: 80,
+                text: '+  const minusLength = parseInt(m[2] ?? "1");',
+              },
+              {
+                nlinum: 80,
+                olinum: 80,
+                text:
+                  "+  // 元hunkの長さが0の時、開始位置が-1されてるっぽいので補正",
+              },
+              {
+                nlinum: 81,
+                olinum: 80,
+                text:
+                  "+  let olinum = minusLength === 0 ? ostart + 1 : ostart;",
+              },
+            ],
+            nstart: 79,
+            ostart: 79,
+          },
+        ],
+        newFileName: "b/denops/@ddu-sources/udiff/diff.ts",
+        oldFileName: "a/denops/@ddu-sources/udiff/diff.ts",
+      },
+      {
+        header: [
+          "--- a/doc/ddu-source-git_diff.txt",
+          "+++ b/doc/ddu-source-git_diff.txt",
+        ],
+        hunks: [
+          {
+            header: "@@ -106,0 +107,6 @@ show\t\t(boolean)",
+            lines: [
+              {
+                nlinum: 107,
+                olinum: 107,
+                text:
+                  "+                                    *ddu-source-git_diff-param-unifiedContext*",
+              },
+              {
+                nlinum: 108,
+                olinum: 107,
+                text: "+unifiedContext\t(number)",
+              },
+              {
+                nlinum: 109,
+                olinum: 107,
+                text:
+                  "+\t\tGenerate diffs with specified lines of unified context.",
+              },
+              {
+                nlinum: 110,
+                olinum: 107,
+                text: "+\t\tIt pass to `-U<n>`",
+              },
+              {
+                nlinum: 111,
+                olinum: 107,
+                text: "+",
+              },
+              {
+                nlinum: 112,
+                olinum: 107,
+                text: "+\t\tDefault: 3",
+              },
+            ],
+            nstart: 107,
+            ostart: 106,
+          },
+        ],
+        newFileName: "b/doc/ddu-source-git_diff.txt",
+        oldFileName: "a/doc/ddu-source-git_diff.txt",
+      },
+    ]);
+  },
+});

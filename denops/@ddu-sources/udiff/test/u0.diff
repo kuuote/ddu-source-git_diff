@@ -1,0 +1,28 @@
+diff --git a/denops/@ddu-sources/git_diff.ts b/denops/@ddu-sources/git_diff.ts
+index 1fc7229..1d9af45 100644
+--- a/denops/@ddu-sources/git_diff.ts
++++ b/denops/@ddu-sources/git_diff.ts
+@@ -22,0 +23 @@ const defaultParams = {
++  unifiedContext: 3,
+@@ -174,0 +176 @@ export class Source extends BaseSource<Params> {
++              "-U" + sourceParams.unifiedContext,
+diff --git a/denops/@ddu-sources/udiff/diff.ts b/denops/@ddu-sources/udiff/diff.ts
+index c193fe5..9a7a207 100644
+--- a/denops/@ddu-sources/udiff/diff.ts
++++ b/denops/@ddu-sources/udiff/diff.ts
+@@ -79 +79,3 @@ export const parseHunk = (lines: string[]): Hunk => {
+-  let olinum = ostart;
++  const minusLength = parseInt(m[2] ?? "1");
++  // 元hunkの長さが0の時、開始位置が-1されてるっぽいので補正
++  let olinum = minusLength === 0 ? ostart + 1 : ostart;
+diff --git a/doc/ddu-source-git_diff.txt b/doc/ddu-source-git_diff.txt
+index 9488cef..13a7c7d 100644
+--- a/doc/ddu-source-git_diff.txt
++++ b/doc/ddu-source-git_diff.txt
+@@ -106,0 +107,6 @@ show		(boolean)
++                                    *ddu-source-git_diff-param-unifiedContext*
++unifiedContext	(number)
++		Generate diffs with specified lines of unified context.
++		It pass to `-U<n>`
++
++		Default: 3

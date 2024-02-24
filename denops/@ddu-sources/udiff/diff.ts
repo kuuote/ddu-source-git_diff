@@ -76,7 +76,9 @@ export const parseHunk = (lines: string[]): Hunk => {
   }
   const ostart = parseInt(m[1] ?? 1);
   const nstart = parseInt(m[3] ?? 1);
-  let olinum = ostart;
+  const minusLength = parseInt(m[2] ?? "1");
+  // 元hunkの長さが0の時、開始位置が-1されてるっぽいので補正
+  let olinum = minusLength === 0 ? ostart + 1 : ostart;
   let nlinum = nstart;
   for (let i = 1; i < lines.length; i++) {
     parsed.push({
