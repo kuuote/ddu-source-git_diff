@@ -1,19 +1,19 @@
 import { applyPatch, DiffLine, parseDiff } from "./udiff/diff.ts";
-import * as stdpath from "https://deno.land/std@0.211.0/path/mod.ts";
+import * as stdpath from "https://deno.land/std@0.220.1/path/mod.ts";
 import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.7.1/file.ts";
 import {
   GatherArguments,
-} from "https://deno.land/x/ddu_vim@v3.9.0/base/source.ts";
+} from "https://deno.land/x/ddu_vim@v3.10.3/base/source.ts";
 import {
   ActionArguments,
   ActionFlags,
   BaseSource,
   Item,
   ItemHighlight,
-} from "https://deno.land/x/ddu_vim@v3.9.0/types.ts";
-import { errorException } from "https://deno.land/x/ddu_vim@v3.9.0/utils.ts";
-import { Denops } from "https://deno.land/x/denops_std@v5.2.0/mod.ts";
-import * as u from "https://deno.land/x/unknownutil@v3.13.0/mod.ts";
+} from "https://deno.land/x/ddu_vim@v3.10.3/types.ts";
+import { errorException } from "https://deno.land/x/ddu_vim@v3.10.3/utils.ts";
+import { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
+import * as u from "https://deno.land/x/unknownutil@v3.17.0/mod.ts";
 
 const defaultParams = {
   cached: false,
