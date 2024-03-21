@@ -105,13 +105,6 @@ function makeHighlight(text: string, highlightGroup?: string): {
   };
 }
 
-function requiredEntries<V>(
-  obj: Record<string, V>,
-): [string, NonNullable<V>][] {
-  return Object.entries(obj)
-    .filter((e: [string, V]): e is [string, NonNullable<V>] => e[1] != null);
-}
-
 export class Source extends BaseSource<Params> {
   override kind = "file";
 
@@ -119,13 +112,13 @@ export class Source extends BaseSource<Params> {
     applyPatch: async (args: ActionArguments<Params>) => {
       const isNonNull = <T>(x: T): x is NonNullable<T> => x != null;
       // ファイル単位で処理
-      const itemsByFiles = Object.groupBy(
+      const itemsByFiles = Map.groupBy(
         args.items
           .map((item) => u.maybe(item, isItemWithData))
           .filter(isNonNull), // 型ァ！(filter直だと上手く行かん)
         (item) => item.data.git_diff.path,
       );
-      for (const [abspath, items] of requiredEntries(itemsByFiles)) {
+      for (const [abspath, items] of itemsByFiles) {
         const worktree = items[0].data.git_diff.worktree;
         const patches = items.map((item) => item.data.git_diff.lines).flat();
         // git showにtreeishを与えるとindexのデータを取れる
