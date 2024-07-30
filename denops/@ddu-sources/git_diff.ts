@@ -87,10 +87,17 @@ async function getWorktreeFromPath(denops: Denops, worktree: string) {
   ], dir)).trim();
 }
 
-function makeHighlight(text: string, highlightGroup?: string): {
+async function makeHighlight(
+  denops: Denops,
+  text: string,
+  highlightGroup?: string,
+): Promise<{
   highlights?: ItemHighlight[];
-} {
+}> {
   if (highlightGroup == null) {
+    return {};
+  }
+  if (await denops.call("hlexists", highlightGroup) != 1) {
     return {};
   }
   return {
@@ -179,29 +186,31 @@ export class Source extends BaseSource<Params> {
           const items: Item<ActionData>[][] = [];
           for (const chunk of chunks) {
             const fileName = stdpath.join(worktree, chunk.newFileName);
-            items.push(chunk.header.map((line) => {
-              const hl = line.startsWith("---")
-                ? "diffOldFile"
-                : line.startsWith("+++")
-                ? "diffNewFile"
-                : undefined;
-              const highlight = makeHighlight(line, hl);
-              return {
-                data: {
-                  git_diff: {
-                    lines: chunk.hunks.map((h) => h.lines).flat(),
-                    worktree: worktree,
+            items.push(
+              await Promise.all(chunk.header.map(async (line) => {
+                const hl = line.startsWith("---")
+                  ? "diffOldFile"
+                  : line.startsWith("+++")
+                  ? "diffNewFile"
+                  : undefined;
+                const highlight = await makeHighlight(denops, line, hl);
+                return {
+                  data: {
+                    git_diff: {
+                      lines: chunk.hunks.map((h) => h.lines).flat(),
+                      worktree: worktree,
+                      path: fileName,
+                    },
+                  } satisfies Data,
+                  word: line,
+                  action: {
+                    lineNr: 1,
                     path: fileName,
                   },
-                } satisfies Data,
-                word: line,
-                action: {
-                  lineNr: 1,
-                  path: fileName,
-                },
-                ...highlight,
-              };
-            }));
+                  ...highlight,
+                };
+              })),
+            );
             for (const hunk of chunk.hunks) {
               items.push([{
                 data: {
@@ -216,26 +225,32 @@ export class Source extends BaseSource<Params> {
                   lineNr: hunk.nstart,
                   path: fileName,
                 },
-                ...makeHighlight(hunk.header, "diffLine"),
+                ...await makeHighlight(denops, hunk.header, "diffLine"),
               }]);
-              items.push(hunk.lines.map((line) => {
-                const highlight = makeHighlight(line.text, hls[line.text[0]]);
-                return {
-                  data: {
-                    git_diff: {
-                      lines: [line],
-                      worktree: worktree,
+              items.push(
+                await Promise.all(hunk.lines.map(async (line) => {
+                  const highlight = await makeHighlight(
+                    denops,
+                    line.text,
+                    hls[line.text[0]],
+                  );
+                  return {
+                    data: {
+                      git_diff: {
+                        lines: [line],
+                        worktree: worktree,
+                        path: fileName,
+                      },
+                    } satisfies Data,
+                    word: line.text,
+                    action: {
+                      lineNr: line.nlinum,
                       path: fileName,
                     },
-                  } satisfies Data,
-                  word: line.text,
-                  action: {
-                    lineNr: line.nlinum,
-                    path: fileName,
-                  },
-                  ...highlight,
-                };
-              }));
+                    ...highlight,
+                  };
+                })),
+              );
             }
           }
           controller.enqueue(items.flat());
