@@ -1,19 +1,17 @@
 import { applyPatch, DiffLine, parseDiff } from "./udiff/diff.ts";
-import * as stdpath from "https://deno.land/std@0.220.1/path/mod.ts";
-import { ActionData } from "https://deno.land/x/ddu_kind_file@v0.7.1/file.ts";
-import {
-  GatherArguments,
-} from "https://deno.land/x/ddu_vim@v3.10.3/base/source.ts";
+import * as u from "jsr:@core/unknownutil@3.18.1";
+import { Denops } from "jsr:@denops/std@7.0.0";
+import { ActionData } from "jsr:@shougo/ddu-kind-file@0.8.0";
+import { GatherArguments } from "jsr:@shougo/ddu-vim@5.0.0/source";
 import {
   ActionArguments,
   ActionFlags,
   BaseSource,
   Item,
   ItemHighlight,
-} from "https://deno.land/x/ddu_vim@v3.10.3/types.ts";
-import { errorException } from "https://deno.land/x/ddu_vim@v3.10.3/utils.ts";
-import { Denops } from "https://deno.land/x/denops_std@v6.4.0/mod.ts";
-import * as u from "https://deno.land/x/unknownutil@v3.17.0/mod.ts";
+} from "jsr:@shougo/ddu-vim@5.0.0/types";
+import { printError } from "jsr:@shougo/ddu-vim@5.0.0/utils";
+import * as stdpath from "jsr:@std/path@1.0.2";
 
 const defaultParams = {
   cached: false,
@@ -256,7 +254,7 @@ export class Source extends BaseSource<Params> {
           controller.enqueue(items.flat());
           controller.close();
         } catch (e: unknown) {
-          await errorException(denops, e, "gather failed");
+          await printError(denops, e, "gather failed");
         }
       },
     });
