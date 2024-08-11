@@ -1,14 +1,14 @@
-import { applyPatch, DiffLine, parseDiff } from "./udiff/diff.ts";
+import { applyPatch, type DiffLine, parseDiff } from "./udiff/diff.ts";
 import * as u from "jsr:@core/unknownutil@^4.0.0";
-import { Denops } from "jsr:@denops/std@^7.0.0";
-import { ActionData } from "jsr:@shougo/ddu-kind-file@^0.8.0";
-import { GatherArguments } from "jsr:@shougo/ddu-vim@^5.0.0/source";
+import type { Denops } from "jsr:@denops/std@^7.0.0";
+import type { ActionData } from "jsr:@shougo/ddu-kind-file@^0.8.0";
+import type { GatherArguments } from "jsr:@shougo/ddu-vim@^5.0.0/source";
 import {
-  ActionArguments,
+  type ActionArguments,
   ActionFlags,
   BaseSource,
-  Item,
-  ItemHighlight,
+  type Item,
+  type ItemHighlight,
 } from "jsr:@shougo/ddu-vim@^5.0.0/types";
 import { printError } from "jsr:@shougo/ddu-vim@^5.0.0/utils";
 import * as stdpath from "jsr:@std/path@^1.0.0";
@@ -111,10 +111,10 @@ async function makeHighlight(
 }
 
 export class Source extends BaseSource<Params> {
-  override kind = "file";
+  kind = "file";
 
   override actions = {
-    applyPatch: async (args: ActionArguments<Params>) => {
+    applyPatch: async (args: ActionArguments<Params>): Promise<ActionFlags> => {
       const isNonNull = <T>(x: T): x is NonNullable<T> => x != null;
       // ファイル単位で処理
       const itemsByFiles = Map.groupBy(
