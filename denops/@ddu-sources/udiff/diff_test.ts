@@ -1,6 +1,6 @@
 import { parseDiff, splitAtFile } from "./diff.ts";
-import { assertEquals } from "https://deno.land/std@0.220.1/assert/assert_equals.ts";
-import * as path from "https://deno.land/std@0.220.1/path/mod.ts";
+import { assertEquals } from "jsr:@std/assert@^1.0.0";
+import * as path from "jsr:@std/path@^1.0.0";
 
 const dir = path.dirname(path.fromFileUrl(import.meta.url));
 

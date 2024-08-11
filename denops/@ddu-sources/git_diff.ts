@@ -1,17 +1,17 @@
 import { applyPatch, DiffLine, parseDiff } from "./udiff/diff.ts";
-import * as u from "jsr:@core/unknownutil@3.18.1";
-import { Denops } from "jsr:@denops/std@7.0.0";
-import { ActionData } from "jsr:@shougo/ddu-kind-file@0.8.0";
-import { GatherArguments } from "jsr:@shougo/ddu-vim@5.0.0/source";
+import * as u from "jsr:@core/unknownutil@^4.0.0";
+import { Denops } from "jsr:@denops/std@^7.0.0";
+import { ActionData } from "jsr:@shougo/ddu-kind-file@^0.8.0";
+import { GatherArguments } from "jsr:@shougo/ddu-vim@^5.0.0/source";
 import {
   ActionArguments,
   ActionFlags,
   BaseSource,
   Item,
   ItemHighlight,
-} from "jsr:@shougo/ddu-vim@5.0.0/types";
-import { printError } from "jsr:@shougo/ddu-vim@5.0.0/utils";
-import * as stdpath from "jsr:@std/path@1.0.2";
+} from "jsr:@shougo/ddu-vim@^5.0.0/types";
+import { printError } from "jsr:@shougo/ddu-vim@^5.0.0/utils";
+import * as stdpath from "jsr:@std/path@^1.0.0";
 
 const defaultParams = {
   cached: false,
